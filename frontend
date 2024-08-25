@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFHL API Frontend</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>BFHL API Frontend</h1>
+        
+        <h2>Make a POST Request</h2>
+        <form id="postForm">
+            <label for="full_name">Full Name:</label>
+            <input type="text" id="full_name" name="full_name" required><br><br>
+
+            <label for="dob">Date of Birth (DDMMYYYY):</label>
+            <input type="text" id="dob" name="dob" required><br><br>
+
+            <label for="college_email">College Email:</label>
+            <input type="email" id="college_email" name="college_email" required><br><br>
+
+            <label for="roll_number">Roll Number:</label>
+            <input type="text" id="roll_number" name="roll_number" required><br><br>
+
+            <label for="data">Data (Comma-separated):</label>
+            <input type="text" id="data" name="data" required><br><br>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <h2>Make a GET Request</h2>
+        <button id="getButton">Get Operation Code</button>
+
+        <h3>Response:</h3>
+        <pre id="response"></pre>
+    </div>
+
+    <script>
+        // Handle POST Request
+        document.getElementById('postForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById('full_name').value;
+            const dob = document.getElementById('dob').value;
+            const collegeEmail = document.getElementById('college_email').value;
+            const rollNumber = document.getElementById('roll_number').value;
+            const data = document.getElementById('data').value.split(',');
+
+            const postData = {
+                full_name: fullName,
+                dob: dob,
+                college_email: collegeEmail,
+                roll_number: rollNumber,
+                data: data
+            };
+
+            const response = await fetch('/bfhl', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(postData)
+            });
+
+            const result = await response.json();
+            document.getElementById('response').textContent = JSON.stringify(result, null, 2);
+        });
+
+        // Handle GET Request
+        document.getElementById('getButton').addEventListener('click', async function() {
+            const response = await fetch('/bfhl', {
+                method: 'GET'
+            });
+
+            const result = await response.json();
+            document.getElementById('response').textContent = JSON.stringify(result, null, 2);
+        });
+    </script>
+</body>
+</html>
