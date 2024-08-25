@@ -1,0 +1,49 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/bfhl', methods=['POST'])
+def process_data():
+    try:
+        # Validate input JSON
+        data = request.get_json()
+        if not data or 'data' not in data:
+            return jsonify({"is_success": False, "message": "Invalid input data"}), 400
+
+        # Extract details
+        user_id = f"{data.get('full_name', 'unknown').lower()}_{data.get('dob', '00000000')}"
+        email = data.get('college_email', '')
+        roll_number = data.get('roll_number', '')
+        input_array = data.get('data', [])
+
+        # Separate numbers and alphabets
+        numbers = [int(i) for i in input_array if str(i).isdigit()]
+        alphabets = [i for i in input_array if isinstance(i, str) and i.isalpha()]
+
+        # Find the highest lowercase alphabet
+        lowercase_alphabets = [i for i in alphabets if i.islower()]
+        highest_lowercase = max(lowercase_alphabets) if lowercase_alphabets else None
+
+        # Build the response
+        response = {
+            "is_success": True,
+            "user_id": user_id,
+            "college_email": email,
+            "roll_number": roll_number,
+            "numbers": numbers,
+            "alphabets": alphabets,
+            "highest_lowercase": highest_lowercase
+        }
+
+        return jsonify(response), 200
+
+    except Exception as e:
+        # Log and handle exceptions gracefully
+        return jsonify({"is_success": False, "message": str(e)}), 500
+
+@app.route('/bfhl', methods=['GET'])
+def get_operation_code():
+    return jsonify({"operation_code": "BFHL2024"}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
